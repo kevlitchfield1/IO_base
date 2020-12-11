@@ -8,17 +8,12 @@ library(plyr)
 require(reshape2)
 library(gridExtra)
 library(cowplot)
-library(survival)
-library('survminer')
 library(scales)
 library('dplyr')
 library(ggbeeswarm)
-
 library(meta)
 library("glmnet")
-
 library("ROCR")
-
 library("xgboost")
 library("DiagrammeR")
 library("pROC")
@@ -45,7 +40,6 @@ serology_no_tox<-data.frame(matrix(sample(1:100,(750*500),replace=T),nrow=750))
 serology<-rbind(serology_tox,serology_no_tox)
 serology$serology_signature<-rowMeans(serology)
 
-
 # labels
 labels<-data.frame(c(rep(1,250),rep(0,750)));names(labels)[1]<-"label"
 
@@ -54,16 +48,16 @@ all_dat<-cbind(proteomics$proteomics_signature,genotypes,serology$serology_signa
 train_index <- sample(seq_len(nrow(all_dat)), size = (nrow(all_dat)*0.5))
 train_data<-all_dat[train_index,];test_data<-all_dat[-train_index,]
 
+# Hyper parameters from grid search using caret package
 mva_mod <- xgboost(data = as.matrix(train_data[,1:3]), label = train_data$label,objective = "binary:logistic",verbose=F,max.depth = 4,nrounds = 20,eta=0.2,"eval_metric" = "logloss")
 importance_matrix <- xgb.importance(model = mva_mod)
 xgb.plot.importance(importance_matrix = importance_matrix,left_margin = 18)
 
+# Plot ROC curve
 pred <- predict(mva_mod, as.matrix(test_data[,1:3]))
 pr <- prediction(as.numeric(pred),test_data$label)
 auc <- performance(pr, measure = "auc")
 auc_val<-auc@y.values[[1]]
-#auc_val
-
 auc <- performance(pr,"tpr","fpr");auc2 <- performance(pr2,"tpr","fpr")
 plot(auc,col="darkblue",lwd=3,xaxt="n")+axis(2, at = seq(0.0,1.0, by = 0.2), las=2)+mtext(paste0("Multivariate AUC: ",round(auc_val,2)),col="darkblue",line=-8,cex=0.8)+ abline(coef = c(0,1))
 
