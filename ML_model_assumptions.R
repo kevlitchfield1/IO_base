@@ -18,7 +18,7 @@ library("xgboost")
 library("DiagrammeR")
 library("pROC")
 
-# N=1000, 500 discovery, 500 validation, frequency of severe tox=25%, non sever tox=75%
+# N=1000, 750 training, 250 test validation, frequency of severe tox=25%, non sever tox=75%
 
 # Proteomics data based on Luminex platform preliminary for 25 markers
 # Difference between groups based on an effect size (minimum 1.15) seen in preliminary data from Sophie Papa lab
