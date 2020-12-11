@@ -45,7 +45,7 @@ labels<-data.frame(c(rep(1,250),rep(0,750)));names(labels)[1]<-"label"
 
 # Merge data
 all_dat<-cbind(proteomics$proteomics_signature,genotypes,serology$serology_signature,labels)
-train_index <- sample(seq_len(nrow(all_dat)), size = (nrow(all_dat)*0.5))
+train_index <- sample(seq_len(nrow(all_dat)), size = (nrow(all_dat)*0.75))
 train_data<-all_dat[train_index,];test_data<-all_dat[-train_index,]
 
 # Hyper parameters from grid search using caret package
